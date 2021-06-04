@@ -42,6 +42,7 @@ public class DungeonSpawner : MonoBehaviour
     //[Range(10,50)]
     private int _iterations;
     private Collider2D _randomTrigger;
+    public bool DungeonGenerated = false;
 
     public List<GameObject> ListOfRooms = new List<GameObject>();
     public List<Transform> WalkTheWalk = new List<Transform>();
@@ -49,13 +50,6 @@ public class DungeonSpawner : MonoBehaviour
     private void Start()
     {
         Generate();
-        //_randomTrigger =WalkTheWalk[(int)Random.Range(0, WalkTheWalk.Count - 1)].GetComponent<Collider2D>();
-        //_randomTrigger.isTrigger = true;
-        //Debug.Log(_randomTrigger.gameObject);
-    }
-    private void Update()
-    {
-       //Reset();
     }
 
     //private void Reset()
@@ -187,6 +181,7 @@ public class DungeonSpawner : MonoBehaviour
                 ListOfRooms.Add(Room);
             }
         }
+        DungeonGenerated = true;
     }
     public bool CoinFlip()
     {

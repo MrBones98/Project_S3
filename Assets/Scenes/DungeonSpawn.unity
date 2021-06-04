@@ -389,6 +389,7 @@ MonoBehaviour:
   - {fileID: 5457860692791826671, guid: e82796d864340384cb90cc6c65b00ffc, type: 3}
   - {fileID: 8288673896642259278, guid: ba6b47a813e74d5468922cdfae844491, type: 3}
   _iterations: 80
+  DungeonGenerated: 0
   ListOfRooms: []
   WalkTheWalk: []
 --- !u!4 &1473429493
@@ -421,7 +422,9 @@ MonoBehaviour:
   EnemyPosition: {x: 0, y: 0}
   Player: {fileID: 4102177716699435212, guid: 19d10e77be62ec040a1e59f8f25630a4, type: 3}
   Enemy: {fileID: 3602469162302823410, guid: 71e67fd0d8b5df34f901e9e88650fa08, type: 3}
-  _amountOfEnemeies: 1
+  Spawned: 0
+  _amountOfEnemeies: 10
+  EnemySpawnIndex: 0
 --- !u!114 &1473429497
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -429,7 +432,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1473429491}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 425358aa695ad9341a85b3d4a6ad9c5d, type: 3}
   m_Name: 
@@ -438,6 +441,7 @@ MonoBehaviour:
   EndNode: {fileID: 0}
   ShortestRoute: []
   RouteLenght: 20
+  Generated: 0
 --- !u!114 &1473429498
 MonoBehaviour:
   m_ObjectHideFlags: 0

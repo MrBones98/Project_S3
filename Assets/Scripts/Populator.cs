@@ -8,22 +8,27 @@ public class Populator : MonoBehaviour
     public Vector2 EnemyPosition;
     public GameObject Player;
     public GameObject Enemy;
+    public bool Spawned = false;
 
     [SerializeField]
     private int _amountOfEnemeies;
+    public int EnemySpawnIndex;
 
-    private PathFindingButNodes _pathFindingButNodes;
-    private EnemyAI _enemyAI;
     private DungeonSpawner _dungeonSpawner;
     void Start()
     {
         _dungeonSpawner = GetComponent<DungeonSpawner>();
-        _pathFindingButNodes = GetComponent<PathFindingButNodes>();
-
-        Invoke("InstantiatePlayer", 1.2f);
-        Invoke("InstantiateEnemy", 1.2f);
+        InstantiatePlayer();
+        //InstantiateEnemy();
     }
-    
+    private void Update()
+    {
+        if(!Spawned)
+        {
+            InstantiateEnemy();
+        }
+    }
+
     private void InstantiatePlayer()
     {
         int index = (Random.Range(0, _dungeonSpawner.ListOfRooms.Count - 1));
@@ -35,9 +40,15 @@ public class Populator : MonoBehaviour
     {
         for (int i = 0; i < _amountOfEnemeies; i++)
         {
+            EnemySpawnIndex = (int)Random.Range(0, _dungeonSpawner.WalkTheWalk.Count - 1);
             //int index = (Random.Range(0, _dungeonSpawner.ListOfRooms.Count - 1));
-            EnemyPosition = _pathFindingButNodes.StartingNode.position;
-            Instantiate(Enemy, EnemyPosition, Quaternion.identity);
+            EnemyPosition = _dungeonSpawner.WalkTheWalk[EnemySpawnIndex].position;
+            Instantiate(Enemy, EnemyPosition, Quaternion.identity);  
         }
+        Spawned = true;
+    }
+    private IEnumerator DelayedSpawn()
+    {
+        yield return new WaitForSeconds(5);
     }
 }

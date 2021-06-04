@@ -10,12 +10,15 @@ public class RoomHandlerButNodes : MonoBehaviour
     [SerializeField] bool visualize;
     Dictionary<Transform, List<Transform>> _neighboursMap = new Dictionary<Transform, List<Transform>>();
 
+    private PathFindingButNodes _pathFindingButNodes;
     private DungeonSpawner _dungeonSpawner;
     private void Start()
     {
         _dungeonSpawner = GetComponent<DungeonSpawner>();
+        _pathFindingButNodes = GetComponent<PathFindingButNodes>();
     }
-    private void Update()
+   
+    public void GenerateGrid()
     {
         List<Transform> nodes = _dungeonSpawner.WalkTheWalk;
         for (int a = 0; a < nodes.Count; a++)
@@ -33,6 +36,7 @@ public class RoomHandlerButNodes : MonoBehaviour
             _neighboursMap[nodeA] = neighbours;
         }
     }
+
     public float GetDistanceBetween(Transform a, Transform b)
     {
         return (b.position - a.position).magnitude;

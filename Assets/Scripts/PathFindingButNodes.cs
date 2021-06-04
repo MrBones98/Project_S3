@@ -6,22 +6,30 @@ public class PathFindingButNodes : MonoBehaviour
 {
     private DungeonSpawner _dungeonSpawner;
     private RoomHandlerButNodes _roomHandler;
+    private Populator _populator;
 
     public Transform StartingNode, EndNode;
     public List<Transform> ShortestRoute;
     public int RouteLenght;
+    public bool Generated= false;
 
     private void Start()
     {
         _dungeonSpawner = FindObjectOfType<DungeonSpawner>();
         _roomHandler = FindObjectOfType<RoomHandlerButNodes>();
-        Invoke("AssignRandomNodes", 1);
+        _populator = FindObjectOfType<Populator>();
+    }
+    public void CalculatePath()
+    {
+        AssignRandomNodes();
+        _roomHandler.GenerateGrid();
+        ShortestRoute = FindShortestRoute();
+        Generated = true;
     }
 
     private void LateUpdate()
     {
-        ShortestRoute = FindShortestRoute();
-        //ShortestRoute.Reverse();
+        //ShortestRoute = FindShortestRoute();
     }
     private void OnDrawGizmos()
     {
@@ -84,18 +92,23 @@ public class PathFindingButNodes : MonoBehaviour
                 }
             }
         }
-        RewindPath();
         return null;
     }
     private List<Transform> ReconstructPath(Dictionary<Transform, Transform> cameFrom, Transform current)
     {
         List<Transform> totalPath = new List<Transform>() { current };
+        List<Transform> rewindedPath = new List<Transform>();
 
         while (cameFrom.ContainsKey(current))
         {
             current = cameFrom[current];
             totalPath.Add(current);
         }
+        for (int i = totalPath.Count-1; i >= 0; i--)
+        {
+            rewindedPath.Add(totalPath[i]);
+        }
+        totalPath = rewindedPath;
         return totalPath;
     }
     private Transform GetLowestFScore(List<Transform> openSet, Dictionary<Transform, float> fScore)
@@ -117,24 +130,19 @@ public class PathFindingButNodes : MonoBehaviour
         }
         return minTransform;
     }
-    private void RewindPath()
-    {
-        List<Transform> rewindedPath = new List<Transform>();
-        for (int i = ShortestRoute.Count - 1; i >= 0; i--)
-        {
-            rewindedPath.Add(ShortestRoute[i]);
-        }
-
-        ShortestRoute = rewindedPath;
-    }
     private void AssignRandomNodes()
     {
-        StartingNode = _dungeonSpawner.WalkTheWalk[Random.Range(0, _dungeonSpawner.WalkTheWalk.Count)];
+        StartingNode = _dungeonSpawner.WalkTheWalk[Random.Range(0, _dungeonSpawner.WalkTheWalk.Count)];// Enemyspawnd on WalktheWalk
+        StartingNode = _dungeonSpawner.WalkTheWalk[_populator.EnemySpawnIndex];
         EndNode = _dungeonSpawner.WalkTheWalk[Random.Range(0, _dungeonSpawner.WalkTheWalk.Count)];
 
         while((Vector2.Distance(StartingNode.position, EndNode.position) < RouteLenght))
         {
             EndNode = _dungeonSpawner.WalkTheWalk[Random.Range(0, _dungeonSpawner.WalkTheWalk.Count)];
         }
+    }
+    private IEnumerator DelayedSpawn()
+    {
+        yield return new WaitForSeconds(2);
     }
 }

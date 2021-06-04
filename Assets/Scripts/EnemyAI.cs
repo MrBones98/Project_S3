@@ -13,17 +13,16 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float _sightRange = 2;
     [SerializeField] private States _npcState = States.Idle;
 
-    private int _index =0;
+    private int _index;
     private Vector2 _facingDirection;
     private Vector2 _playerPos;
     private PathFindingButNodes _thePath;
     private List<Transform> _inversed = new List<Transform>();
-    private void Start()
+    private void Awake()
     {
-        _thePath = FindObjectOfType<PathFindingButNodes>();
+        _thePath = GetComponent<PathFindingButNodes>();
         _playerPos = FindObjectOfType<PlayerController>().GetComponent<Transform>().position;
-        //_thePath.ShortestRoute.Reverse(0, _thePath.ShortestRoute.Count);        
-        //transform.position = Vector2.MoveTowards(transform.position, _thePath.ShortestRoute[1].position, _step);
+        StartCoroutine(WaitingDelay());
     }
     private void Update()
     {
@@ -62,16 +61,6 @@ public class EnemyAI : MonoBehaviour
             }
         }
         return false;
-        //var hits = Physics2D.CircleCast(transform.position, 1.5f, transform.right, ;
-        //foreach (var hit in hits)
-        //{
-        //    if (hit.transform.TryGetComponent(out PlayerController player))
-        //    {
-        //        _playerPos = player.transform.position;
-        //        return true;
-        //    }
-        //}
-        //return false;
     }
     private void FollowPlayer()
     {
@@ -80,34 +69,45 @@ public class EnemyAI : MonoBehaviour
 
     private IEnumerator MovePls()
     {
-        for (int i = 0; i < _thePath.ShortestRoute.Count - 1;  i++)
+        while(_index < _thePath.ShortestRoute.Count - 2)
         {
-            yield return StartCoroutine(GoingBro(transform.position, _thePath.ShortestRoute[i].position, _step));
-            
+            for (_index = _thePath.ShortestRoute.Count - 2; _index > _thePath.ShortestRoute.Count - 1;  _index--)
+            {
+                transform.position = Vector2.MoveTowards(transform.position, _thePath.ShortestRoute[_index].transform.position, _step * Time.deltaTime);
+                if (transform.position == _thePath.ShortestRoute[_index].transform.position)
+                    continue;
+                yield return new WaitForSeconds(0.1f);
+            }
         }
     }
-    private IEnumerator GoingBro(Vector2 position, Vector2 goal, float speed)
-    {
-        Debug.Log(goal);
-        while (position != goal)
-        {
-            Vector2 direction = (goal - position).normalized;
-            transform.position = goal;
-            yield return null;
-        }
-    }
+
     private void Move()
     {
-        if(_thePath.ShortestRoute == null)
+        if (!_thePath.Generated)
         {
             return;
         }
-        Vector2 direction = (_thePath.ShortestRoute[_index].position - transform.position).normalized;
-        transform.position += (Vector3)direction * _step * Time.deltaTime;
-        if((transform.position - _thePath.ShortestRoute[_index].position).magnitude < .1f)
+
+        transform.position = Vector2.MoveTowards(transform.position, _thePath.ShortestRoute[_index].transform.position, _step * Time.deltaTime);
+        
+        if(transform.position == _thePath.ShortestRoute[_index].transform.position && _index < _thePath.ShortestRoute.Count -1)
         {
-            if(_index < _thePath.ShortestRoute.Count-1)
             _index++;
         }
+        else if(_index > _thePath.ShortestRoute.Count - 1)
+        {
+            _index--;
+        }
+
+    }
+    private void GetIndex()
+    {
+        _index = _thePath.ShortestRoute.Count; // it should start like at 20
+    }
+    private IEnumerator WaitingDelay()
+    {
+        yield return new WaitForSeconds(0.4f);
+        _thePath.CalculatePath();
+
     }
 }
